@@ -83,16 +83,16 @@ variables() {
   fi
 }
 
-source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/api.func)
+source <(curl -fsSL https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/feature/Riven/misc/api.func)
 
 if command -v curl >/dev/null 2>&1; then
-  source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/core.func)
-  source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/error_handler.func)
+  source <(curl -fsSL https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/feature/Riven/misc/core.func)
+  source <(curl -fsSL https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/feature/Riven/misc/error_handler.func)
   load_functions
   catch_errors
 elif command -v wget >/dev/null 2>&1; then
-  source <(wget -qO- https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/core.func)
-  source <(wget -qO- https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/error_handler.func)
+  source <(wget -qO- https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/feature/Riven/misc/core.func)
+  source <(wget -qO- https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/feature/Riven/misc/error_handler.func)
   load_functions
   catch_errors
 fi
@@ -3574,7 +3574,7 @@ build_container() {
   if [ "$var_os" == "alpine" ]; then
     _func_url="https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/alpine-install.func"
   else
-    _func_url="https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/install.func"
+    _func_url="https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/feature/Riven/misc/install.func"
   fi
   export FUNCTIONS_FILE_PATH="$(curl -fsSL "$_func_url")"
   if [[ -z "$FUNCTIONS_FILE_PATH" || ${#FUNCTIONS_FILE_PATH} -lt 100 ]]; then
@@ -4128,8 +4128,8 @@ EOF'
     # that sends "configuring" status AFTER the host already reported "failed"
     export CONTAINER_INSTALLING=true
 
-    lxc-attach -n "$CTID" -- bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/install/${var_install}.sh)"
-    local lxc_exit=$?
+  lxc-attach -n "$CTID" -- bash -c "$(curl -fsSL https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/feature/Riven/install/${var_install}.sh)"
+  local lxc_exit=$?
 
     unset CONTAINER_INSTALLING
 
