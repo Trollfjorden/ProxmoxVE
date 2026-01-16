@@ -35,7 +35,6 @@ msg_ok "Installed Dependencies"
 msg_info "Configuring FUSE"
 $STD sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 grep -q '^user_allow_other' /etc/fuse.conf || echo 'user_allow_other' >> /etc/fuse.conf
-$STD setcap cap_sys_admin+ep "$(readlink -f "$(command -v python3)")" 2>/dev/null || true
 msg_ok "Configured FUSE"
 
 # Runtimes and Database
@@ -64,7 +63,6 @@ chmod 755 /opt/riven
 chmod 700 /opt/riven/data
 sudo -u riven -H uv venv
 sudo -u riven -H uv sync --no-dev
-setcap cap_sys_admin+ep "/opt/riven/.venv/bin/python3" 2>/dev/null || true
 msg_ok "Installed Riven Backend"
 
 # Backend environment

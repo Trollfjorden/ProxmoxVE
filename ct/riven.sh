@@ -14,7 +14,6 @@ var_os="${var_os:-debian}"
 var_version="${var_version:-13}"
 var_unprivileged="${var_unprivileged:-1}"
 var_fuse="${var_fuse:-yes}"
-var_keyctl="${var_keyctl:-1}"
 
 header_info "$APP"
 variables
@@ -85,10 +84,9 @@ build_container
 description
 
 msg_ok "Completed successfully!\n"
-import_local_ip
 echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
 echo -e "${INFO}${YW} Access it using the following URL:${CL}"
-echo -e "${TAB}${GATEWAY}${BGN}http://${LOCAL_IP}:8080/scalar${CL} (Backend API)"
-if [[ -d /opt/riven-frontend ]]; then
-  echo -e "${TAB}${GATEWAY}${BGN}http://${LOCAL_IP}:3000${CL} (Frontend UI)"
+echo -e "${TAB}${GATEWAY}${BGN}http://${IP}:8080/scalar${CL} (Backend API)"
+if pct exec "$CTID" -- test -d /opt/riven-frontend; then
+  echo -e "${TAB}${GATEWAY}${BGN}http://${IP}:3000${CL} (Frontend UI)"
 fi
