@@ -10,6 +10,72 @@
 > [!CAUTION]
 Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit the project's popularity for potentially malicious purposes.
 
+## 2026-01-16
+
+### 🆕 New Scripts
+
+  - Flatnotes ([#10857](https://github.com/community-scripts/ProxmoxVE/pull/10857))
+- Unifi OS Server ([#10856](https://github.com/community-scripts/ProxmoxVE/pull/10856))
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - Jotty: increase RAM; cap heap size at 3GB during build [@vhsdream](https://github.com/vhsdream) ([#10868](https://github.com/community-scripts/ProxmoxVE/pull/10868))
+    - SnowShare: Increase default resources [@TuroYT](https://github.com/TuroYT) ([#10865](https://github.com/community-scripts/ProxmoxVE/pull/10865))
+    - postgresql: name of sources file fixed (update check) [@JamborJan](https://github.com/JamborJan) ([#10854](https://github.com/community-scripts/ProxmoxVE/pull/10854))
+    - immich: use dpkg-query to get intel-opencl-icd version [@MickLesk](https://github.com/MickLesk) ([#10848](https://github.com/community-scripts/ProxmoxVE/pull/10848))
+    - domain-monitor: fix: cron user [@CrazyWolf13](https://github.com/CrazyWolf13) ([#10846](https://github.com/community-scripts/ProxmoxVE/pull/10846))
+    - pihole/unbound: create unbound config before apt install to prevent port conflicts [@MickLesk](https://github.com/MickLesk) ([#10839](https://github.com/community-scripts/ProxmoxVE/pull/10839))
+    - zammad: use ln -sf to avoid failure when symlink exists [@MickLesk](https://github.com/MickLesk) ([#10840](https://github.com/community-scripts/ProxmoxVE/pull/10840))
+
+### ❔ Uncategorized
+
+  - qui: fix: category [@CrazyWolf13](https://github.com/CrazyWolf13) ([#10847](https://github.com/community-scripts/ProxmoxVE/pull/10847))
+
+## 2026-01-15
+
+### 🆕 New Scripts
+
+  - Qui ([#10829](https://github.com/community-scripts/ProxmoxVE/pull/10829))
+
+### 🚀 Updated Scripts
+
+  - #### ✨ New Features
+
+    - Refactor: FreshRSS + Bump to Debian 13 [@MickLesk](https://github.com/MickLesk) ([#10824](https://github.com/community-scripts/ProxmoxVE/pull/10824))
+
+## 2026-01-14
+
+### 🆕 New Scripts
+
+  - Kutt ([#10812](https://github.com/community-scripts/ProxmoxVE/pull/10812))
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - Switch Ollama install to .tar.zst and add zstd dependency [@MickLesk](https://github.com/MickLesk) ([#10814](https://github.com/community-scripts/ProxmoxVE/pull/10814))
+    - Immich: Install libde265-dev from Debian Testing [@vhsdream](https://github.com/vhsdream) ([#10810](https://github.com/community-scripts/ProxmoxVE/pull/10810))
+    - nginxproxymanager: allow updates now the build is fixed [@durzo](https://github.com/durzo) ([#10796](https://github.com/community-scripts/ProxmoxVE/pull/10796))
+    - Fixed Apache Guacamole installer [@horvatbenjamin](https://github.com/horvatbenjamin) ([#10798](https://github.com/community-scripts/ProxmoxVE/pull/10798))
+
+### 💾 Core
+
+  - #### ✨ New Features
+
+    - core: Improve NVIDIA GPU setup (5000x Series) [@MickLesk](https://github.com/MickLesk) ([#10807](https://github.com/community-scripts/ProxmoxVE/pull/10807))
+
+### 🧰 Tools
+
+  - Fix whiptail dialog hanging in Proxmox web console [@comk22](https://github.com/comk22) ([#10794](https://github.com/community-scripts/ProxmoxVE/pull/10794))
+
+### 🌐 Website
+
+  - #### 🐞 Bug Fixes
+
+    - Add search filtering to CommandDialog for improved script search functionality [@BramSuurdje](https://github.com/BramSuurdje) ([#10800](https://github.com/community-scripts/ProxmoxVE/pull/10800))
+
 ## 2026-01-13
 
 ### 🆕 New Scripts

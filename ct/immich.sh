@@ -57,9 +57,12 @@ EOF
     fi
     $STD apt update
     msg_ok "Added Debian Testing repo"
-    msg_info "Installing libmimalloc3"
-    $STD apt install -t testing --no-install-recommends libmimalloc3
-    msg_ok "Installed libmimalloc3"
+  fi
+
+  if ! dpkg -l "libmimalloc3" | grep -q '3.1' || ! dpkg -l "libde265-dev" | grep -q '1.0.16'; then
+    msg_info "Installing/upgrading Testing repo packages"
+    $STD apt install -t testing libmimalloc3 libde265-dev -y
+    msg_ok "Installed/upgraded Testing repo packages"
   fi
 
   if [[ ! -f /etc/apt/sources.list.d/mise.list ]]; then
@@ -93,7 +96,7 @@ EOF
       $STD apt install -y ./*.deb
       rm ./*.deb
       $STD apt-mark hold libigdgmm12
-      dpkg -l | grep -m1 "intel-opencl-icd" | awk '{print $3}' >~/.intel_version
+      dpkg-query -W -f='${Version}\n' intel-opencl-icd >~/.intel_version
       msg_ok "Intel iGPU dependencies updated"
     fi
     rm ./Dockerfile
