@@ -27,8 +27,7 @@ $STD apt install -y \
   libpq-dev \
   libfuse3-dev \
   pkg-config \
-  fuse3 \
-  libcap2-bin
+  fuse3
 msg_ok "Installed Dependencies"
 
 # FUSE configuration for VFS
@@ -61,8 +60,8 @@ cd /opt/riven
 chown -R riven:riven /opt/riven
 chmod 755 /opt/riven
 chmod 700 /opt/riven/data
-sudo -u riven -H uv venv
-sudo -u riven -H uv sync --no-dev
+$STD sudo -u riven -H uv venv
+$STD sudo -u riven -H uv sync --no-dev
 msg_ok "Installed Riven Backend"
 
 # Backend environment
