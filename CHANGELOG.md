@@ -14,7 +14,8 @@ Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit 
 
 ### 🆕 New Scripts
 
-  - ThingsBoard ([#10904](https://github.com/community-scripts/ProxmoxVE/pull/10904))
+  - Termix ([#10887](https://github.com/community-scripts/ProxmoxVE/pull/10887))
+- ThingsBoard ([#10904](https://github.com/community-scripts/ProxmoxVE/pull/10904))
 
 ### 🚀 Updated Scripts
 
@@ -26,6 +27,10 @@ Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit 
   - #### 💥 Breaking Changes
 
     - Update Patchmon default Nginx config (IPv6 and correct scheme) [@christiaangoossens](https://github.com/christiaangoossens) ([#10917](https://github.com/community-scripts/ProxmoxVE/pull/10917))
+
+  - #### 🔧 Refactor
+
+    - Refactor: FluidCalendar [@tremor021](https://github.com/tremor021) ([#10928](https://github.com/community-scripts/ProxmoxVE/pull/10928))
 
 ### 🗑️ Deleted Scripts
 
