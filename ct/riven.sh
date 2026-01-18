@@ -30,8 +30,32 @@ function update_script() {
     exit
   fi
 
+  msg_info "Checking for updates"
+  RELEASE_BACKEND=$(git ls-remote https://github.com/rivenmedia/riven.git HEAD | awk '{ print $1 }')
+  if [[ -d /opt/riven-frontend ]]; then
+    RELEASE_FRONTEND=$(git ls-remote https://github.com/rivenmedia/riven-frontend.git HEAD | awk '{ print $1 }')
+  fi
+
+  UPD_BACKEND=false
+  if [[ ! -f /opt/riven_backend_version.txt ]] || [[ "${RELEASE_BACKEND}" != "$(cat /opt/riven_backend_version.txt)" ]]; then
+    UPD_BACKEND=true
+  fi
+
+  UPD_FRONTEND=false
+  if [[ -d /opt/riven-frontend ]]; then
+    if [[ ! -f /opt/riven_frontend_version.txt ]] || [[ "${RELEASE_FRONTEND}" != "$(cat /opt/riven_frontend_version.txt)" ]]; then
+      UPD_FRONTEND=true
+    fi
+  fi
+
+  if [[ "$UPD_BACKEND" == "false" && "$UPD_FRONTEND" == "false" ]]; then
+    msg_ok "No update required. ${APP} is already at the latest version."
+    exit
+  fi
+
   msg_info "Stopping Services"
-  systemctl stop riven-backend riven-frontend 2>/dev/null || true
+  systemctl stop riven-backend 2>/dev/null || true
+  [[ -d /opt/riven-frontend ]] && systemctl stop riven-frontend 2>/dev/null || true
   msg_ok "Stopped Services"
 
   msg_info "Updating Container OS"
@@ -39,35 +63,32 @@ function update_script() {
   $STD apt-get -y upgrade
   msg_ok "Updated Container OS"
 
-  msg_info "Updating PostgreSQL"
   PG_VERSION="18" setup_postgresql
-  msg_ok "Updated PostgreSQL"
-
-  msg_info "Updating uv"
   PYTHON_VERSION="3.13" setup_uv
-  msg_ok "Updated uv"
 
-  msg_info "Updating ${APP} Backend"
-  cd /opt/riven
-  $STD git fetch --all
-  $STD git reset --hard origin/main
-  git -C /opt/riven rev-parse HEAD > /opt/riven_backend_version.txt
-  sudo -u riven -H uv sync --no-dev
-  msg_ok "Updated ${APP} Backend"
-
-  if [[ -d /opt/riven-frontend ]]; then
-    msg_info "Updating Node.js"
-    NODE_VERSION="24" NODE_MODULE="pnpm" setup_nodejs
-    msg_ok "Updated Node.js"
-    
-    msg_info "Updating ${APP} Frontend"
-    cd /opt/riven-frontend
+  if [[ "$UPD_BACKEND" == "true" ]]; then
+    msg_info "Updating ${APP} Backend"
+    cd /opt/riven
     $STD git fetch --all
     $STD git reset --hard origin/main
-    git -C /opt/riven-frontend rev-parse HEAD > /opt/riven_frontend_version.txt
-    $STD pnpm install
-    $STD pnpm run build
-    msg_ok "Updated ${APP} Frontend"
+    echo "${RELEASE_BACKEND}" >/opt/riven_backend_version.txt
+    $STD sudo -u riven -H uv sync --no-dev
+    msg_ok "Updated ${APP} Backend"
+  fi
+
+  if [[ -d /opt/riven-frontend ]]; then
+    NODE_VERSION="24" NODE_MODULE="pnpm" setup_nodejs
+
+    if [[ "$UPD_FRONTEND" == "true" ]]; then
+      msg_info "Updating ${APP} Frontend"
+      cd /opt/riven-frontend
+      $STD git fetch --all
+      $STD git reset --hard origin/main
+      echo "${RELEASE_FRONTEND}" >/opt/riven_frontend_version.txt
+      $STD pnpm install
+      $STD pnpm run build
+      msg_ok "Updated ${APP} Frontend"
+    fi
   fi
 
   msg_info "Starting Services"
