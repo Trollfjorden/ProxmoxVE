@@ -53,7 +53,7 @@ msg_ok "Created Riven User and Directories"
 
 # Backend installation
 msg_info "Installing Riven Backend"
-git clone -q https://github.com/rivenmedia/riven.git /opt/riven
+$STD git clone https://github.com/rivenmedia/riven.git /opt/riven
 git -C /opt/riven rev-parse HEAD > /opt/riven_backend_version.txt
 mkdir -p /opt/riven/data
 cd /opt/riven
@@ -107,7 +107,7 @@ if [[ ! "${prompt,,}" =~ ^(n|no)$ ]]; then
   NODE_VERSION="24" NODE_MODULE="pnpm" setup_nodejs
 
   msg_info "Installing Riven Frontend"
-  git clone -q https://github.com/rivenmedia/riven-frontend.git /opt/riven-frontend
+  $STD git clone https://github.com/rivenmedia/riven-frontend.git /opt/riven-frontend
   git -C /opt/riven-frontend rev-parse HEAD > /opt/riven_frontend_version.txt
   cd /opt/riven-frontend
   $STD pnpm install
