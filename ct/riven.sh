@@ -53,18 +53,16 @@ function update_script() {
     exit
   fi
 
+  source <(curl -fsSL https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/feature/Riven/misc/install.func)
+
   msg_info "Stopping Services"
   systemctl stop riven-backend 2>/dev/null || true
   [[ -d /opt/riven-frontend ]] && systemctl stop riven-frontend 2>/dev/null || true
   msg_ok "Stopped Services"
 
-  msg_info "Updating Container OS"
-  $STD apt-get update
-  $STD apt-get -y upgrade
-  msg_ok "Updated Container OS"
-
+  update_os
+  setup_uv
   PG_VERSION="18" setup_postgresql
-  PYTHON_VERSION="3.13" setup_uv
 
   if [[ "$UPD_BACKEND" == "true" ]]; then
     msg_info "Updating ${APP} Backend"
@@ -77,9 +75,8 @@ function update_script() {
   fi
 
   if [[ -d /opt/riven-frontend ]]; then
-    NODE_VERSION="24" NODE_MODULE="pnpm" setup_nodejs
-
     if [[ "$UPD_FRONTEND" == "true" ]]; then
+      NODE_VERSION="24" NODE_MODULE="pnpm" setup_nodejs
       msg_info "Updating ${APP} Frontend"
       cd /opt/riven-frontend
       $STD git fetch --all

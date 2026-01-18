@@ -14,6 +14,8 @@ setting_up_container
 network_check
 update_os
 
+setup_uv
+
 # Dependencies (locales handled by LXC, curl/sudo/mc in base image)
 msg_info "Installing Dependencies"
 $STD apt install -y \
@@ -36,8 +38,7 @@ $STD sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 grep -q '^user_allow_other' /etc/fuse.conf || echo 'user_allow_other' >> /etc/fuse.conf
 msg_ok "Configured FUSE"
 
-# Runtimes and Database
-PYTHON_VERSION="3.13" setup_uv
+# Database
 PG_VERSION="18" setup_postgresql
 PG_DB_NAME="riven" PG_DB_USER="riven" setup_postgresql_db
 
