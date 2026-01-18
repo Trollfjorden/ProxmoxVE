@@ -10,6 +10,27 @@
 > [!CAUTION]
 Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit the project's popularity for potentially malicious purposes.
 
+## 2026-01-18
+
+## 2026-01-17
+
+### 🆕 New Scripts
+
+  - TRIP ([#10864](https://github.com/community-scripts/ProxmoxVE/pull/10864))
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - fix sonarqube update version info (#10870) [@Karlito83](https://github.com/Karlito83) ([#10871](https://github.com/community-scripts/ProxmoxVE/pull/10871))
+    - WGDashboard: Update repo URL [@tremor021](https://github.com/tremor021) ([#10872](https://github.com/community-scripts/ProxmoxVE/pull/10872))
+
+### 🌐 Website
+
+  - #### 📝 Script Information
+
+    - Disable Palmer [@michelroegl-brunner](https://github.com/michelroegl-brunner) ([#10889](https://github.com/community-scripts/ProxmoxVE/pull/10889))
+
 ## 2026-01-16
 
 ### 🆕 New Scripts
