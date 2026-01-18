@@ -12,6 +12,36 @@ Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit 
 
 ## 2026-01-18
 
+### 🆕 New Scripts
+
+  - ThingsBoard ([#10904](https://github.com/community-scripts/ProxmoxVE/pull/10904))
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - refactor: peanut entrypoint [@CrazyWolf13](https://github.com/CrazyWolf13) ([#10902](https://github.com/community-scripts/ProxmoxVE/pull/10902))
+
+### 💾 Core
+
+  - #### 🔧 Refactor
+
+    - hwaccel: improve NVIDIA version matching and GPU selection UI [@MickLesk](https://github.com/MickLesk) ([#10901](https://github.com/community-scripts/ProxmoxVE/pull/10901))
+
+### 📂 Github
+
+  - Fix typo in the New Script request template [@tremor021](https://github.com/tremor021) ([#10891](https://github.com/community-scripts/ProxmoxVE/pull/10891))
+
+### 🌐 Website
+
+  - #### 🐞 Bug Fixes
+
+    - fix: preserve newest scripts pagination [@jgrubiox](https://github.com/jgrubiox) ([#10882](https://github.com/community-scripts/ProxmoxVE/pull/10882))
+
+### ❔ Uncategorized
+
+  - Update qui.json [@GalaxyCatD3v](https://github.com/GalaxyCatD3v) ([#10896](https://github.com/community-scripts/ProxmoxVE/pull/10896))
+
 ## 2026-01-17
 
 ### 🆕 New Scripts
