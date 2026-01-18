@@ -27,7 +27,15 @@ Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit 
 
     - Update Patchmon default Nginx config (IPv6 and correct scheme) [@christiaangoossens](https://github.com/christiaangoossens) ([#10917](https://github.com/community-scripts/ProxmoxVE/pull/10917))
 
+### 🗑️ Deleted Scripts
+
+  - Remove iVentoy script [@tremor021](https://github.com/tremor021) ([#10924](https://github.com/community-scripts/ProxmoxVE/pull/10924))
+
 ### 💾 Core
+
+  - #### ✨ New Features
+
+    - core: improve password handling and validation logic [@MickLesk](https://github.com/MickLesk) ([#10925](https://github.com/community-scripts/ProxmoxVE/pull/10925))
 
   - #### 🔧 Refactor
 
