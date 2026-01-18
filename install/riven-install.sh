@@ -69,7 +69,7 @@ msg_ok "Installed Riven Backend"
 RIVEN_API_KEY=$(openssl rand -hex 16)
 cat <<EOF >/etc/riven/backend.env
 RIVEN_API_KEY=$RIVEN_API_KEY
-RIVEN_DATABASE_HOST=postgresql+psycopg2://$PG_DB_USER:$PG_DB_PASS@127.0.0.1/$PG_DB_NAME
+RIVEN_DATABASE_HOST=postgresql+psycopg2://$PG_DB_USER:$PG_DB_PASS@/$PG_DB_NAME?host=/var/run/postgresql
 RIVEN_DEBUG=INFO
 RIVEN_FILESYSTEM_MOUNT_PATH=/mount
 RIVEN_UPDATERS_LIBRARY_PATH=/mnt/riven
@@ -122,7 +122,7 @@ if [[ ! "${prompt,,}" =~ ^(n|no)$ ]]; then
   AUTH_SECRET=$(openssl rand -base64 32)
   cat <<EOF >/etc/riven/frontend.env
 DATABASE_URL=/opt/riven/data/riven.db
-BACKEND_URL=http://localhost:8080
+BACKEND_URL=http://127.0.0.1:8080
 BACKEND_API_KEY=$RIVEN_API_KEY
 AUTH_SECRET=$AUTH_SECRET
 ORIGIN=http://$LOCAL_IP:3000
