@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
 # Copyright (c) 2021-2026 community-scripts ORG
-# Author: bvdberg01
+# Author: luismco
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
-# Source: https://phpipam.net/
+# Source: https://github.com/ThePhaseless/Byparr
 
-APP="phpIPAM"
-var_tags="${var_tags:-network}"
-var_cpu="${var_cpu:-1}"
-var_ram="${var_ram:-512}"
+APP="Byparr"
+var_tags="${var_tags:-proxy}"
+var_cpu="${var_cpu:-2}"
+var_ram="${var_ram:-2048}"
 var_disk="${var_disk:-4}"
 var_os="${var_os:-debian}"
 var_version="${var_version:-13}"
@@ -23,31 +23,20 @@ function update_script() {
   header_info
   check_container_storage
   check_container_resources
-  if [[ ! -d /opt/phpipam ]]; then
+  if [[ ! -d /opt/Byparr ]]; then
     msg_error "No ${APP} Installation Found!"
     exit
   fi
-  setup_mariadb
-  if check_for_gh_release "phpipam" "phpipam/phpipam"; then
+
+  if check_for_gh_release "Byparr" "ThePhaseless/Byparr"; then
     msg_info "Stopping Service"
-    systemctl stop apache2
+    systemctl stop byparr
     msg_ok "Stopped Service"
 
-    PHP_VERSION="8.4" PHP_APACHE="YES" PHP_FPM="YES" PHP_MODULE="mysql,gmp,snmp,ldap,apcu" setup_php
-
-    msg_info "Installing PHP-PEAR"
-    $STD apt install -y \
-      php-pear \
-      php-dev
-    msg_ok "Installed PHP-PEAR"
-
-    mv /opt/phpipam/ /opt/phpipam-backup
-    CLEAN_INSTALL=1 fetch_and_deploy_gh_release "phpipam" "phpipam/phpipam" "prebuild" "latest" "/opt/phpipam" "phpipam-v*.zip"
-    cp /opt/phpipam-backup/config.php /opt/phpipam
-    rm -r /opt/phpipam-backup
+    CLEAN_INSTALL=1 fetch_and_deploy_gh_release "Byparr" "ThePhaseless/Byparr" "tarball" "latest"
 
     msg_info "Starting Service"
-    systemctl start apache2
+    systemctl start byparr
     msg_ok "Started Service"
     msg_ok "Updated successfully!"
   fi
@@ -61,4 +50,4 @@ description
 msg_ok "Completed successfully!\n"
 echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
 echo -e "${INFO}${YW} Access it using the following URL:${CL}"
-echo -e "${TAB}${GATEWAY}${BGN}http://${IP}${CL}"
+echo -e "${TAB}${GATEWAY}${BGN}http://${IP}:8191${CL}"

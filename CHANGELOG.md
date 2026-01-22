@@ -10,6 +10,120 @@
 > [!CAUTION]
 Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit the project's popularity for potentially malicious purposes.
 
+## 2026-01-22
+
+### 🆕 New Scripts
+
+  - Loki |  Alpine-Loki ([#11048](https://github.com/community-scripts/ProxmoxVE/pull/11048))
+
+### 🚀 Updated Scripts
+
+  - Immich: Increase RAM to 6GB [@vhsdream](https://github.com/vhsdream) ([#10965](https://github.com/community-scripts/ProxmoxVE/pull/10965))
+
+  - #### 🐞 Bug Fixes
+
+    - Jotty: Increase default disk size from 6 to 8 [@tremor021](https://github.com/tremor021) ([#11056](https://github.com/community-scripts/ProxmoxVE/pull/11056))
+    - Fix tags in several scripts [@s4dmach1ne](https://github.com/s4dmach1ne) ([#11050](https://github.com/community-scripts/ProxmoxVE/pull/11050))
+
+### 💾 Core
+
+  - #### ✨ New Features
+
+    - tools: use distro packages for MariaDB by default [@MickLesk](https://github.com/MickLesk) ([#11049](https://github.com/community-scripts/ProxmoxVE/pull/11049))
+
+## 2026-01-21
+
+### 🆕 New Scripts
+
+  - Byparr ([#11039](https://github.com/community-scripts/ProxmoxVE/pull/11039))
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - fix: Snipe-IT update missing all user uploads (#11032) [@ruanmed](https://github.com/ruanmed) ([#11033](https://github.com/community-scripts/ProxmoxVE/pull/11033))
+    - yubal: fix for v0.2 [@CrazyWolf13](https://github.com/CrazyWolf13) ([#11006](https://github.com/community-scripts/ProxmoxVE/pull/11006))
+    - Joplin-Server: use yarn workspaces focus for faster builds [@MickLesk](https://github.com/MickLesk) ([#11027](https://github.com/community-scripts/ProxmoxVE/pull/11027))
+
+### 💾 Core
+
+  - #### ✨ New Features
+
+    - tools: add ubuntu PHP repository setup [@MickLesk](https://github.com/MickLesk) ([#11034](https://github.com/community-scripts/ProxmoxVE/pull/11034))
+
+  - #### 🔧 Refactor
+
+    - core: allow empty tags & improve template search [@MickLesk](https://github.com/MickLesk) ([#11020](https://github.com/community-scripts/ProxmoxVE/pull/11020))
+
+### 🌐 Website
+
+  - #### 📝 Script Information
+
+    - Joplin Server: Set disable flag to true in joplin-server.json [@tremor021](https://github.com/tremor021) ([#11008](https://github.com/community-scripts/ProxmoxVE/pull/11008))
+
+## 2026-01-20
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - dolibarr: switch mirror [@MickLesk](https://github.com/MickLesk) ([#11004](https://github.com/community-scripts/ProxmoxVE/pull/11004))
+    - checkmk: reordner base function [@MickLesk](https://github.com/MickLesk) ([#10990](https://github.com/community-scripts/ProxmoxVE/pull/10990))
+    - Homepage: preserve config directory during updates [@MickLesk](https://github.com/MickLesk) ([#10993](https://github.com/community-scripts/ProxmoxVE/pull/10993))
+    - DiscoPanel: add go for update build process [@miausalvaje](https://github.com/miausalvaje) ([#10991](https://github.com/community-scripts/ProxmoxVE/pull/10991))
+
+### 💾 Core
+
+  - #### ✨ New Features
+
+    - core: add retry logic for template lock in LXC container creation [@MickLesk](https://github.com/MickLesk) ([#11002](https://github.com/community-scripts/ProxmoxVE/pull/11002))
+    - core: implement ensure_profile_loaded function [@MickLesk](https://github.com/MickLesk) ([#10999](https://github.com/community-scripts/ProxmoxVE/pull/10999))
+    - core: add input validations for several functions [@MickLesk](https://github.com/MickLesk) ([#10995](https://github.com/community-scripts/ProxmoxVE/pull/10995))
+
+## 2026-01-19
+
+### 🆕 New Scripts
+
+  - yubal ([#10955](https://github.com/community-scripts/ProxmoxVE/pull/10955))
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - Apache-Guacamole: move jdbc cleanup after schema upgrade [@MickLesk](https://github.com/MickLesk) ([#10974](https://github.com/community-scripts/ProxmoxVE/pull/10974))
+    - Outline: prevent corepack interactive prompt blocking installation [@MickLesk](https://github.com/MickLesk) ([#10973](https://github.com/community-scripts/ProxmoxVE/pull/10973))
+    - firefly: prevent nested storage directories during update (#10967) [@MickLesk](https://github.com/MickLesk) ([#10972](https://github.com/community-scripts/ProxmoxVE/pull/10972))
+    - PeaNUT: change default port [@vhsdream](https://github.com/vhsdream) ([#10962](https://github.com/community-scripts/ProxmoxVE/pull/10962))
+    - Update/splunk enterprise [@rcastley](https://github.com/rcastley) ([#10949](https://github.com/community-scripts/ProxmoxVE/pull/10949))
+
+  - #### ✨ New Features
+
+    - Pangolin: use dynamic badger plugin version [@MickLesk](https://github.com/MickLesk) ([#10975](https://github.com/community-scripts/ProxmoxVE/pull/10975))
+    - Tautulli: add version detection and add proper update script [@MickLesk](https://github.com/MickLesk) ([#10976](https://github.com/community-scripts/ProxmoxVE/pull/10976))
+
+  - #### 🔧 Refactor
+
+    - Refactor: Remove custom IP fetching in scripts [@tremor021](https://github.com/tremor021) ([#10954](https://github.com/community-scripts/ProxmoxVE/pull/10954))
+    - Refactor: Homepage [@tremor021](https://github.com/tremor021) ([#10950](https://github.com/community-scripts/ProxmoxVE/pull/10950))
+    - Refactor: hev-socks5-server [@tremor021](https://github.com/tremor021) ([#10945](https://github.com/community-scripts/ProxmoxVE/pull/10945))
+
+### 🗑️ Deleted Scripts
+
+  - Remove: phpIPAM [@MickLesk](https://github.com/MickLesk) ([#10939](https://github.com/community-scripts/ProxmoxVE/pull/10939))
+
+### 💾 Core
+
+  - #### ✨ New Features
+
+    - core: add RFC 1123/952 compliant hostname/FQDN validation [@MickLesk](https://github.com/MickLesk) ([#10977](https://github.com/community-scripts/ProxmoxVE/pull/10977))
+    - [core]: Make LXC IP a global variable [@tremor021](https://github.com/tremor021) ([#10951](https://github.com/community-scripts/ProxmoxVE/pull/10951))
+
+### 🧰 Tools
+
+  - #### 🔧 Refactor
+
+    - Refactor: copyparty [@MickLesk](https://github.com/MickLesk) ([#10941](https://github.com/community-scripts/ProxmoxVE/pull/10941))
+
 ## 2026-01-18
 
 ### 🆕 New Scripts
