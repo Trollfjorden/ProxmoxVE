@@ -67,8 +67,8 @@ function update_script() {
   if [[ "$UPD_BACKEND" == "true" ]]; then
     msg_info "Updating ${APP} Backend"
     cd /opt/riven
-    $STD git fetch --all
-    $STD git reset --hard origin/main
+    $STD sudo -u riven git fetch --all
+    $STD sudo -u riven git reset --hard origin/main
     echo "${RELEASE_BACKEND}" >/opt/riven_backend_version.txt
     $STD sudo -u riven -H uv sync --no-dev
     msg_ok "Updated ${APP} Backend"
@@ -79,8 +79,8 @@ function update_script() {
       NODE_VERSION="24" NODE_MODULE="pnpm" setup_nodejs
       msg_info "Updating ${APP} Frontend"
       cd /opt/riven-frontend
-      $STD git fetch --all
-      $STD git reset --hard origin/main
+      $STD sudo -u riven git fetch --all
+      $STD sudo -u riven git reset --hard origin/main
       echo "${RELEASE_FRONTEND}" >/opt/riven_frontend_version.txt
       $STD pnpm install
       $STD pnpm run build
