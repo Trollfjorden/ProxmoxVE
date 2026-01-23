@@ -10,6 +10,36 @@
 > [!CAUTION]
 Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit the project's popularity for potentially malicious purposes.
 
+## 2026-01-23
+
+### 🆕 New Scripts
+
+  - Tracearr ([#11079](https://github.com/community-scripts/ProxmoxVE/pull/11079))
+- Dawarich ([#11075](https://github.com/community-scripts/ProxmoxVE/pull/11075))
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - add: uptime-kuma: chromium [@CrazyWolf13](https://github.com/CrazyWolf13) ([#11081](https://github.com/community-scripts/ProxmoxVE/pull/11081))
+    - fix(install): Add typing_extensions to SearXNG Python dependencies [@ZarenOFF](https://github.com/ZarenOFF) ([#11074](https://github.com/community-scripts/ProxmoxVE/pull/11074))
+
+  - #### ✨ New Features
+
+    - several scripts: bump default Alpine version to 3.23 [@MickLesk](https://github.com/MickLesk) ([#11082](https://github.com/community-scripts/ProxmoxVE/pull/11082))
+    - PDM: avoid installing useless package [@LongQT-sea](https://github.com/LongQT-sea) ([#10833](https://github.com/community-scripts/ProxmoxVE/pull/10833))
+
+  - #### 🔧 Refactor
+
+    - FHEM: Bump to Debian 13 [@tremor021](https://github.com/tremor021) ([#11061](https://github.com/community-scripts/ProxmoxVE/pull/11061))
+    - Duplicati: Bump to Debian 13 [@tremor021](https://github.com/tremor021) ([#11060](https://github.com/community-scripts/ProxmoxVE/pull/11060))
+
+### 💾 Core
+
+  - #### ✨ New Features
+
+    - core: add IPv6 fallback support to get_current_ip functions | add check for SSH_KEYS_FILE in user_defaults [@MickLesk](https://github.com/MickLesk) ([#11067](https://github.com/community-scripts/ProxmoxVE/pull/11067))
+
 ## 2026-01-22
 
 ### 🆕 New Scripts

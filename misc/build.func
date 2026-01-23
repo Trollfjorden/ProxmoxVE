@@ -160,17 +160,29 @@ maxkeys_check() {
 #
 # - Returns current container IP depending on OS type
 # - Debian/Ubuntu: uses `hostname -I`
-# - Alpine: parses eth0 via `ip -4 addr`
+# - Alpine: parses eth0 via `ip -4 addr` or `ip -6 addr`
+# - Supports IPv6-only environments as fallback
 # - Returns "Unknown" if OS type cannot be determined
 # ------------------------------------------------------------------------------
 get_current_ip() {
+  CURRENT_IP=""
   if [ -f /etc/os-release ]; then
     # Check for Debian/Ubuntu (uses hostname -I)
     if grep -qE 'ID=debian|ID=ubuntu' /etc/os-release; then
-      CURRENT_IP=$(hostname -I | awk '{print $1}')
+      # Try IPv4 first
+      CURRENT_IP=$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
+      # Fallback to IPv6 if no IPv4
+      if [[ -z "$CURRENT_IP" ]]; then
+        CURRENT_IP=$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E ':' | head -n1)
+      fi
     # Check for Alpine (uses ip command)
     elif grep -q 'ID=alpine' /etc/os-release; then
-      CURRENT_IP=$(ip -4 addr show eth0 | awk '/inet / {print $2}' | cut -d/ -f1 | head -n 1)
+      # Try IPv4 first
+      CURRENT_IP=$(ip -4 addr show eth0 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | head -n 1)
+      # Fallback to IPv6 if no IPv4
+      if [[ -z "$CURRENT_IP" ]]; then
+        CURRENT_IP=$(ip -6 addr show eth0 scope global 2>/dev/null | awk '/inet6 / {print $2}' | cut -d/ -f1 | head -n 1)
+      fi
     else
       CURRENT_IP="Unknown"
     fi
@@ -202,6 +214,7 @@ update_motd_ip() {
 #
 # - Installs SSH keys into container root account if SSH is enabled
 # - Uses pct push or direct input to authorized_keys
+# - Supports both SSH_KEYS_FILE (from advanced settings) and SSH_AUTHORIZED_KEY (from user defaults)
 # - Falls back to warning if no keys provided
 # ------------------------------------------------------------------------------
 install_ssh_keys_into_ct() {
@@ -209,6 +222,13 @@ install_ssh_keys_into_ct() {
 
   # Ensure SSH_KEYS_FILE is defined (may not be set if advanced_settings was skipped)
   : "${SSH_KEYS_FILE:=}"
+
+  # If SSH_KEYS_FILE doesn't exist but SSH_AUTHORIZED_KEY is set (from user defaults),
+  # create a temporary SSH_KEYS_FILE with the key
+  if [[ -z "$SSH_KEYS_FILE" || ! -s "$SSH_KEYS_FILE" ]] && [[ -n "${SSH_AUTHORIZED_KEY:-}" ]]; then
+    SSH_KEYS_FILE="$(mktemp)"
+    printf '%s\n' "$SSH_AUTHORIZED_KEY" >"$SSH_KEYS_FILE"
+  fi
 
   if [[ -n "$SSH_KEYS_FILE" && -s "$SSH_KEYS_FILE" ]]; then
     msg_info "Installing selected SSH keys into CT ${CTID}"
