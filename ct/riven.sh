@@ -14,6 +14,9 @@ var_os="${var_os:-debian}"
 var_version="${var_version:-13}"
 var_unprivileged="${var_unprivileged:-1}"
 var_fuse="${var_fuse:-yes}"
+var_nesting="${var_nesting:-1}"
+var_keyctl="${var_keyctl:-1}"
+var_mount_fs="${var_mount_fs:-fuse}"
 
 header_info "$APP"
 variables
