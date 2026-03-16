@@ -44,11 +44,14 @@ CROSS="${RD}✗${CL}"
 set -Eeo pipefail
 trap 'error_handler $LINENO "$BASH_COMMAND"' ERR
 trap cleanup EXIT
+trap 'post_update_to_api "failed" "130"' SIGINT
+trap 'post_update_to_api "failed" "143"' SIGTERM
+trap 'post_update_to_api "failed" "129"; exit 129' SIGHUP
 function error_handler() {
   local exit_code="$?"
   local line_number="$1"
   local command="$2"
-  post_update_to_api "failed" "$command"
+  post_update_to_api "failed" "$exit_code"
   local error_message="${RD}[ERROR]${CL} in line ${RD}$line_number${CL}: exit code ${RD}$exit_code${CL}: while executing command ${YW}$command${CL}"
   echo -e "\n$error_message\n"
   cleanup_vmid
@@ -79,12 +82,38 @@ function cleanup_vmid() {
 }
 
 function cleanup() {
+  local exit_code=$?
   popd >/dev/null
-  post_update_to_api "done" "none"
+  if [[ "${POST_TO_API_DONE:-}" == "true" && "${POST_UPDATE_DONE:-}" != "true" ]]; then
+    if [[ $exit_code -eq 0 ]]; then
+      post_update_to_api "done" "none"
+    else
+      post_update_to_api "failed" "$exit_code"
+    fi
+  fi
   rm -rf $TEMP_DIR
 }
 
-TEMP_DIR=$(mktemp -d)
+function check_disk_space() {
+  local path="$1"
+  local required_gb="$2"
+  local available_kb=$(df -k "$path" | awk 'NR==2 {print $4}')
+  local available_gb=$((available_kb / 1024 / 1024))
+  if [ $available_gb -lt $required_gb ]; then
+    return 1
+  fi
+  return 0
+}
+
+# Use disk-backed temp directory to avoid tmpfs/RAM size limits in /tmp
+if [ -d "/var/tmp" ] && check_disk_space "/var/tmp" 20; then
+  TEMP_DIR=$(mktemp -d /var/tmp/opnsense-vm.XXXXXX)
+elif [ -d "/tmp" ] && check_disk_space "/tmp" 20; then
+  TEMP_DIR=$(mktemp -d)
+else
+  # Fallback: try /var/tmp anyway, disk space check will catch it later
+  TEMP_DIR=$(mktemp -d /var/tmp/opnsense-vm.XXXXXX)
+fi
 pushd $TEMP_DIR >/dev/null
 function send_line_to_vm() {
   echo -e "${DGN}Sending line: ${YW}$1${CL}"
@@ -189,7 +218,7 @@ pve_check() {
     if ((MINOR < 0 || MINOR > 9)); then
       msg_error "This version of Proxmox VE is not supported."
       msg_error "Supported: Proxmox VE version 8.0 – 8.9"
-      exit 1
+      exit 105
     fi
     return 0
   fi
@@ -200,7 +229,7 @@ pve_check() {
     if ((MINOR < 0 || MINOR > 1)); then
       msg_error "This version of Proxmox VE is not supported."
       msg_error "Supported: Proxmox VE version 9.0 – 9.1"
-      exit 1
+      exit 105
     fi
     return 0
   fi
@@ -208,7 +237,7 @@ pve_check() {
   # All other unsupported versions
   msg_error "This version of Proxmox VE is not supported."
   msg_error "Supported versions: Proxmox VE 8.0 – 8.x or 9.0 – 9.1"
-  exit 1
+  exit 105
 }
 
 function arch_check() {
@@ -239,6 +268,10 @@ function exit-script() {
   exit
 }
 
+function get_available_bridges() {
+  ip -o link show type bridge 2>/dev/null | awk -F': ' '{print $2}' | sort
+}
+
 function default_settings() {
   VMID=$(get_valid_nextid)
   FORMAT=",efitype=4m"
@@ -258,17 +291,23 @@ function default_settings() {
   VLAN=""
   MAC=$GEN_MAC
   WAN_MAC=$GEN_MAC_LAN
-  WAN_BRG="vmbr1"
+  WAN_BRG=""
   MTU=""
   START_VM="yes"
   METHOD="default"
+
+  # Detect available bridges
+  local AVAILABLE_BRIDGES
+  AVAILABLE_BRIDGES=$(get_available_bridges)
+  local BRIDGE_COUNT
+  BRIDGE_COUNT=$(echo "$AVAILABLE_BRIDGES" | wc -l)
 
   echo -e "${DGN}Using Virtual Machine ID: ${BGN}${VMID}${CL}"
   echo -e "${DGN}Using Hostname: ${BGN}${HN}${CL}"
   echo -e "${DGN}Allocated Cores: ${BGN}${CORE_COUNT}${CL}"
   echo -e "${DGN}Allocated RAM: ${BGN}${RAM_SIZE}${CL}"
-  if ! grep -q "^iface ${BRG}" /etc/network/interfaces; then
-    msg_error "Bridge '${BRG}' does not exist in /etc/network/interfaces"
+  if ! ip link show "${BRG}" &>/dev/null; then
+    msg_error "Bridge '${BRG}' does not exist"
     exit
   else
     echo -e "${DGN}Using LAN Bridge: ${BGN}${BRG}${CL}"
@@ -276,26 +315,34 @@ function default_settings() {
   echo -e "${DGN}Using LAN VLAN: ${BGN}Default${CL}"
   echo -e "${DGN}Using LAN MAC Address: ${BGN}${MAC}${CL}"
 
-  if NETWORK_MODE=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "NETWORK CONFIGURATION" --radiolist --cancel-button Exit-Script \
-    "Choose network setup mode for OPNsense:\n" 14 70 2 \
-    "dual" "Dual Interface (Traditional Firewall/Router)" ON \
-    "single" "Single Interface (Proxy/VPN/IDS Server)" OFF \
-    3>&1 1>&2 2>&3); then
-    if [ "$NETWORK_MODE" = "dual" ]; then
-      echo -e "${DGN}Network Mode: ${BGN}Dual Interface (Firewall)${CL}"
-      echo -e "${DGN}Using WAN MAC Address: ${BGN}${WAN_MAC}${CL}"
-      if ! grep -q "^iface ${WAN_BRG}" /etc/network/interfaces; then
-        msg_error "Bridge '${WAN_BRG}' does not exist in /etc/network/interfaces"
-        exit
-      else
+  # Determine available network modes based on bridge count
+  local DEFAULT_WAN_BRG
+  DEFAULT_WAN_BRG=$(echo "$AVAILABLE_BRIDGES" | grep -v "^${BRG}$" | head -n1)
+
+  if [ "$BRIDGE_COUNT" -ge 2 ]; then
+    # Multiple bridges available - offer dual or single mode
+    if NETWORK_MODE=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "NETWORK CONFIGURATION" --radiolist --cancel-button Exit-Script \
+      "Choose network setup mode for OPNsense:\n" 14 70 2 \
+      "dual" "Dual Interface (Firewall/Router) - uses ${DEFAULT_WAN_BRG}" ON \
+      "single" "Single Interface (Proxy/VPN/IDS Server)" OFF \
+      3>&1 1>&2 2>&3); then
+      if [ "$NETWORK_MODE" = "dual" ]; then
+        WAN_BRG="$DEFAULT_WAN_BRG"
+        echo -e "${DGN}Network Mode: ${BGN}Dual Interface (Firewall)${CL}"
         echo -e "${DGN}Using WAN Bridge: ${BGN}${WAN_BRG}${CL}"
+        echo -e "${DGN}Using WAN MAC Address: ${BGN}${WAN_MAC}${CL}"
+      else
+        echo -e "${DGN}Network Mode: ${BGN}Single Interface (Proxy/VPN/IDS)${CL}"
+        WAN_BRG=""
       fi
     else
-      echo -e "${DGN}Network Mode: ${BGN}Single Interface (Proxy/VPN/IDS)${CL}"
-      WAN_BRG=""
+      exit-script
     fi
   else
-    exit-script
+    # Only one bridge available - single interface mode only
+    echo -e "${DGN}Network Mode: ${BGN}Single Interface (Proxy/VPN/IDS)${CL}"
+    echo -e "${YW}  (Only one bridge detected, dual interface requires a second bridge)${CL}"
+    WAN_BRG=""
   fi
   echo -e "${DGN}Using Interface MTU Size: ${BGN}Default${CL}"
   echo -e "${DGN}Start VM when completed: ${BGN}yes${CL}"
@@ -403,8 +450,8 @@ function advanced_settings() {
     if [ -z $BRG ]; then
       BRG="vmbr0"
     fi
-    if ! grep -q "^iface ${BRG}" /etc/network/interfaces; then
-      msg_error "Bridge '${BRG}' does not exist in /etc/network/interfaces"
+    if ! ip link show "${BRG}" &>/dev/null; then
+      msg_error "Bridge '${BRG}' does not exist"
       exit
     fi
     echo -e "${DGN}Using LAN Bridge: ${BGN}$BRG${CL}"
@@ -449,13 +496,29 @@ function advanced_settings() {
     exit-script
   fi
 
-  if WAN_BRG=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a WAN Bridge" 8 58 vmbr1 --title "WAN BRIDGE" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
-    if [ -z $WAN_BRG ]; then
-      WAN_BRG="vmbr1"
+  # Build WAN bridge selection from available bridges (excluding LAN bridge)
+  local WAN_BRIDGES
+  WAN_BRIDGES=$(get_available_bridges | grep -v "^${BRG}$")
+  if [ -z "$WAN_BRIDGES" ]; then
+    msg_error "No additional bridge available for WAN. Only '${BRG}' exists."
+    msg_error "Create a second bridge (e.g. vmbr1) in Proxmox network config first."
+    exit
+  fi
+  local WAN_MENU=()
+  local first=true
+  while IFS= read -r brg; do
+    if $first; then
+      WAN_MENU+=("$brg" "" "ON")
+      first=false
+    else
+      WAN_MENU+=("$brg" "" "OFF")
     fi
-    if ! grep -q "^iface ${WAN_BRG}" /etc/network/interfaces; then
-      msg_error "WAN Bridge '${WAN_BRG}' does not exist in /etc/network/interfaces"
-      exit
+  done <<<"$WAN_BRIDGES"
+
+  if WAN_BRG=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "WAN BRIDGE" --radiolist "Select WAN Bridge" 14 58 6 \
+    "${WAN_MENU[@]}" 3>&1 1>&2 2>&3); then
+    if [ -z "$WAN_BRG" ]; then
+      WAN_BRG=$(echo "$WAN_BRIDGES" | head -n1)
     fi
     echo -e "${DGN}Using WAN Bridge: ${BGN}$WAN_BRG${CL}"
   else
@@ -595,14 +658,44 @@ for ver in $RELEASE_LIST; do
 done
 if [ -z "$URL" ]; then
   msg_error "Could not find generic FreeBSD amd64 qcow2 image (non-UFS/ZFS)."
-  exit 1
+  exit 115
 fi
 msg_ok "Download URL: ${CL}${BL}${URL}${CL}"
+
+# Check available disk space (require at least 20GB for safety)
+if ! check_disk_space "$TEMP_DIR" 20; then
+  AVAILABLE_GB=$(df -h "$TEMP_DIR" | awk 'NR==2 {print $4}')
+  msg_error "Insufficient disk space in temporary directory ($TEMP_DIR)."
+  msg_error "Available: ${AVAILABLE_GB}, Required: ~20GB for FreeBSD image decompression."
+  msg_error "Please free up space or ensure /tmp has sufficient storage."
+  exit 214
+fi
+
+msg_info "Downloading FreeBSD Image"
 curl -f#SL -o "$(basename "$URL")" "$URL"
 echo -en "\e[1A\e[0K"
+msg_ok "Downloaded ${CL}${BL}$(basename "$URL")${CL}"
+
+# Check disk space again before decompression
+if ! check_disk_space "$TEMP_DIR" 15; then
+  AVAILABLE_GB=$(df -h "$TEMP_DIR" | awk 'NR==2 {print $4}')
+  msg_error "Insufficient disk space for decompression."
+  msg_error "Available: ${AVAILABLE_GB}, Required: ~15GB for decompressed image."
+  exit 214
+fi
+
+msg_info "Decompressing FreeBSD Image (this may take a few minutes)"
 FILE=FreeBSD.qcow2
-unxz -cv $(basename $URL) >${FILE}
-msg_ok "Downloaded ${CL}${BL}${FILE}${CL}"
+if ! unxz -cv $(basename $URL) >${FILE}; then
+  msg_error "Failed to decompress FreeBSD image."
+  msg_error "This is usually caused by insufficient disk space."
+  df -h "$TEMP_DIR"
+  exit 115
+fi
+
+# Remove the compressed file to save space
+rm -f "$(basename "$URL")"
+msg_ok "Decompressed ${CL}${BL}${FILE}${CL}"
 
 STORAGE_TYPE=$(pvesm status -storage $STORAGE | awk 'NR>1 {print $2}')
 case $STORAGE_TYPE in
@@ -618,6 +711,11 @@ btrfs)
   DISK_IMPORT="-format raw"
   FORMAT=",efitype=4m"
   THIN=""
+  ;;
+*)
+  DISK_EXT=""
+  DISK_REF=""
+  DISK_IMPORT="-format raw"
   ;;
 esac
 for i in {0,1}; do
@@ -637,7 +735,7 @@ qm set $VMID \
   -boot order=scsi0 \
   -serial0 socket \
   -tags community-script >/dev/null
-qm resize $VMID scsi0 10G >/dev/null
+qm resize $VMID scsi0 20G >/dev/null
 DESCRIPTION=$(
   cat <<EOF
 <div align='center'>

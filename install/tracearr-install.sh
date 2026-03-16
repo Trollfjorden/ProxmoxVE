@@ -17,7 +17,7 @@ msg_info "Installing Dependencies"
 $STD apt install -y redis-server
 msg_ok "Installed Dependencies"
 
-NODE_VERSION="22" setup_nodejs
+NODE_VERSION="24" setup_nodejs
 PG_VERSION="18" setup_postgresql
 
 msg_info "Installing pnpm"
@@ -44,7 +44,20 @@ $STD timescaledb-tune -yes -memory "$ram_for_tsdb"MB
 $STD systemctl restart postgresql
 msg_ok "Installed TimescaleDB"
 
-PG_DB_NAME="tracearr_db" PG_DB_USER="tracearr" PG_DB_EXTENSIONS="timescaledb,timescaledb_toolkit" setup_postgresql_db
+PG_DB_NAME="tracearr_db" PG_DB_USER="tracearr" PG_DB_EXTENSIONS="timescaledb,timescaledb_toolkit" PG_DB_GRANT_SUPERUSER="true" setup_postgresql_db
+
+msg_info "Installing tailscale"
+setup_deb822_repo \
+  "tailscale" \
+  "https://pkgs.tailscale.com/stable/$(get_os_info id)/$(get_os_info codename).noarmor.gpg" \
+  "https://pkgs.tailscale.com/stable/$(get_os_info id)/" \
+  "$(get_os_info codename)"
+$STD apt install -y tailscale
+# Tracearr runs tailscaled in user mode, disable the service.
+$STD systemctl disable --now tailscaled
+$STD systemctl stop tailscaled
+msg_ok "Installed tailscale"
+
 fetch_and_deploy_gh_release "tracearr" "connorgallopo/Tracearr" "tarball" "latest" "/opt/tracearr.build"
 
 msg_info "Building Tracearr"
@@ -59,6 +72,7 @@ cp -rf pnpm-workspace.yaml /opt/tracearr/
 cp -rf pnpm-lock.yaml /opt/tracearr/
 cp -rf apps/server/package.json /opt/tracearr/apps/server/
 cp -rf apps/server/dist /opt/tracearr/apps/server/dist
+cp -rf apps/server/scripts /opt/tracearr/apps/server/scripts
 cp -rf apps/web/dist /opt/tracearr/apps/web/dist
 cp -rf packages/shared/package.json /opt/tracearr/packages/shared/
 cp -rf packages/shared/dist /opt/tracearr/packages/shared/dist
@@ -74,6 +88,7 @@ msg_info "Configuring Tracearr"
 $STD useradd -r -s /bin/false -U tracearr
 $STD chown -R tracearr:tracearr /opt/tracearr
 install -d -m 750 -o tracearr -g tracearr /data/tracearr
+install -d -m 750 -o tracearr -g tracearr /data/backup
 export JWT_SECRET=$(openssl rand -hex 32)
 export COOKIE_SECRET=$(openssl rand -hex 32)
 cat <<EOF >/data/tracearr/.env
@@ -88,7 +103,6 @@ JWT_SECRET=$JWT_SECRET
 COOKIE_SECRET=$COOKIE_SECRET
 APP_VERSION=$(cat /root/.tracearr)
 #CORS_ORIGIN=http://localhost:5173
-#MOBILE_BETA_MODE=true
 EOF
 chmod 600 /data/tracearr/.env
 chown -R tracearr:tracearr /data/tracearr
@@ -109,20 +123,37 @@ if command -v timescaledb-tune &> /dev/null; then
         || echo "Warning: timescaledb-tune failed (non-fatal)"
 fi
 # =============================================================================
-# Ensure TimescaleDB decompression limit is set (for existing databases)
+# Ensure required PostgreSQL settings for Tracearr
 # =============================================================================
-# This setting allows migrations to modify compressed hypertable data.
-# Without it, bulk UPDATEs on compressed sessions will fail with
-# "tuple decompression limit exceeded" errors.
 pg_config_file="/etc/postgresql/18/main/postgresql.conf"
 if [ -f \$pg_config_file ]; then
-    if ! grep -q "max_tuples_decompressed_per_dml_transaction" \$pg_config_file; then
+    # Ensure max_tuples_decompressed_per_dml_transaction is set
+    if grep -q "^timescaledb\.max_tuples_decompressed_per_dml_transaction" \$pg_config_file; then
+        # Setting exists (uncommented) - update if not 0
+        current_value=\$(grep "^timescaledb\.max_tuples_decompressed_per_dml_transaction" \$pg_config_file | grep -oE '[0-9]+' | head -1)
+        if [ -n "\$current_value" ] && [ "\$current_value" -ne 0 ]; then
+            sed -i "s/^timescaledb\.max_tuples_decompressed_per_dml_transaction.*/timescaledb.max_tuples_decompressed_per_dml_transaction = 0/" \$pg_config_file
+        fi
+    elif ! grep -q "^timescaledb\.max_tuples_decompressed_per_dml_transaction" \$pg_config_file; then
         echo "" >> \$pg_config_file
         echo "# Allow unlimited tuple decompression for migrations on compressed hypertables" >> \$pg_config_file
         echo "timescaledb.max_tuples_decompressed_per_dml_transaction = 0" >> \$pg_config_file
     fi
+    # Ensure max_locks_per_transaction is set (for existing databases)
+    if grep -q "^max_locks_per_transaction" \$pg_config_file; then
+        # Setting exists (uncommented) - update if below 4096
+        current_value=\$(grep "^max_locks_per_transaction" \$pg_config_file | grep -oE '[0-9]+' | head -1)
+        if [ -n "\$current_value" ] && [ "\$current_value" -lt 4096 ]; then
+            sed -i "s/^max_locks_per_transaction.*/max_locks_per_transaction = 4096/" \$pg_config_file
+        fi
+    elif ! grep -q "^max_locks_per_transaction" \$pg_config_file; then
+        echo "" >> \$pg_config_file
+        echo "# Increase lock table size for TimescaleDB hypertables with many chunks" >> \$pg_config_file
+        echo "max_locks_per_transaction = 4096" >> \$pg_config_file
+    fi
 fi
 systemctl restart postgresql
+sudo -u postgres psql -c "ALTER USER tracearr WITH SUPERUSER;"
 EOF
 chmod +x /data/tracearr/prestart.sh
 cat <<EOF >/lib/systemd/system/tracearr.service

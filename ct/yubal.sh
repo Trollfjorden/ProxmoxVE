@@ -29,6 +29,8 @@ function update_script() {
     exit
   fi
 
+  ensure_dependencies git
+
   if check_for_gh_release "yubal" "guillevc/yubal"; then
     msg_info "Stopping Services"
     systemctl stop yubal
@@ -45,7 +47,7 @@ function update_script() {
 
     msg_info "Installing Python Dependencies"
     cd /opt/yubal
-    $STD uv sync --no-dev --frozen
+    $STD uv sync --package yubal-api --no-dev --frozen
     msg_ok "Installed Python Dependencies"
 
     msg_info "Starting Services"

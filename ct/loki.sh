@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
-# Copyright (c) 2021-2025 community-scripts ORG
+# Copyright (c) 2021-2026 community-scripts ORG
 # Author: hoholms
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/grafana/loki
@@ -26,24 +26,16 @@ function update_script() {
 
   if ! dpkg -s loki >/dev/null 2>&1; then
     msg_error "No ${APP} Installation Found!"
-    exit 1
+    exit 233
   fi
 
-  while true; do
-    CHOICE=$(
-      whiptail --backtitle "Proxmox VE Helper Scripts" --title "SUPPORT" --menu "Select option" 11 58 3 \
-        "1" "Update Loki & Promtail" \
-        "2" "Allow 0.0.0.0 for listening" \
-        "3" "Allow only ${LOCAL_IP} for listening" 3>&2 2>&1 1>&3
-    )
-    exit_status=$?
-    if [ $exit_status == 1 ]; then
-      clear
-      exit-script
-    fi
-    header_info
-    case $CHOICE in
-    1)
+  CHOICE=$(msg_menu "Loki Update Options" \
+    "1" "Update Loki & Promtail" \
+    "2" "Allow 0.0.0.0 for listening" \
+    "3" "Allow only ${LOCAL_IP} for listening")
+
+  case $CHOICE in
+  1)
       msg_info "Stopping Loki"
       systemctl stop loki
       if systemctl is-active --quiet promtail 2>/dev/null || dpkg -s promtail >/dev/null 2>&1; then
@@ -85,7 +77,6 @@ function update_script() {
       exit
       ;;
     esac
-  done
   exit 0
 }
 

@@ -2,8 +2,8 @@
 
 # Copyright (c) 2021-2026 tteck
 # Author: tteck (tteckster)
-# License: MIT
-# https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
+# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
+# Source: https://coder.com/ | Github: https://github.com/coder/code-server
 
 function header_info {
   cat <<"EOF"
@@ -28,6 +28,11 @@ HOLD="-"
 CM="${GN}✓${CL}"
 APP="Coder Code Server"
 hostname="$(hostname)"
+
+# Telemetry
+source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/api.func) 2>/dev/null || true
+declare -f init_tool_telemetry &>/dev/null && init_tool_telemetry "coder-code-server" "addon"
+
 set -o errexit
 set -o errtrace
 set -o nounset
@@ -84,17 +89,25 @@ VERSION=$(curl -fsSL https://api.github.com/repos/coder/code-server/releases/lat
   awk '{print substr($2, 3, length($2)-4) }')
 
 msg_info "Installing Code-Server v${VERSION}"
+
+if [ -f ~/.config/code-server/config.yaml ]; then
+  existing_config=true
+fi
+
 curl -fOL https://github.com/coder/code-server/releases/download/v"$VERSION"/code-server_"${VERSION}"_amd64.deb &>/dev/null
 dpkg -i code-server_"${VERSION}"_amd64.deb &>/dev/null
 rm -rf code-server_"${VERSION}"_amd64.deb
 mkdir -p ~/.config/code-server/
 systemctl enable -q --now code-server@"$USER"
+
+if [ $existing_config = false ]; then
 cat <<EOF >~/.config/code-server/config.yaml
 bind-addr: 0.0.0.0:8680
 auth: none
 password: 
 cert: false
 EOF
+fi
 systemctl restart code-server@"$USER"
 msg_ok "Installed Code-Server v${VERSION} on $hostname"
 
