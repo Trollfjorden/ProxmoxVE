@@ -90,15 +90,13 @@ RIVEN_SETTING__preferSeasonPacks=true
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_STREMTHRU__realdebridApiKey="<key>"
 
 # Seerr
-# LOG_LEVEL="info"
-# RIVEN_PLUGIN_SETTING__plugin-seerr__url="http://<seerr-lxc-ip>:5055"
-# RIVEN_PLUGIN_SETTING__plugin-seerr__apiKey="<key>"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_SEERR__url="http://<seerr-lxc-ip>:5055"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_SEERR__apiKey="<key>"
 
 # Plex
-# PLEX_CLAIM=""
-# RIVEN_PLUGIN_SETTING__plugin-plex__plexServerUrl="http://<plex-lxc-ip>:32400"
-# RIVEN_PLUGIN_SETTING__plugin-plex__plexToken="<key>"
-# RIVEN_PLUGIN_SETTING__plugin-plex__plexLibraryPath="/mnt/riven"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_PLEX__plexServerUrl="http://<plex-lxc-ip>:32400"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_PLEX__plexToken="<key>"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_PLEX__plexLibraryPath="/mnt/riven"
 
 # TMDB
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_TMDB__apiKey="<key>"
