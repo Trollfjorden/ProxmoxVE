@@ -37,7 +37,7 @@ PG_VERSION="18" setup_postgresql
 PG_DB_NAME="rivents" PG_DB_USER="rivents" setup_postgresql_db
 
 msg_info "Installing pnpm"
-PNPM_VERSION="$(curl -fsSL "https://raw.githubusercontent.com/rivenmedia/riven-ts/refs/heads/main/package.json" | jq -r '.packageManager | split("@")[1]' | cut -d'+' -f1)"
+PNPM_VERSION="$(curl -fsSL "https://raw.githubusercontent.com/rivenmedia/riven-ts/refs/heads/chore/configure-multi-platform-docker-builds/package.json" | jq -r '.packageManager | split("@")[1]' | cut -d'+' -f1)"
 export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 $STD corepack enable pnpm
 $STD corepack prepare pnpm@${PNPM_VERSION} --activate
@@ -51,7 +51,7 @@ chmod 700 /dev/shm/rivents-cache
 msg_ok "Set up directories"
 
 msg_info "Downloading RivenTS"
-$STD git clone https://github.com/rivenmedia/riven-ts.git /opt/rivents.build
+$STD git clone -b chore/configure-multi-platform-docker-builds https://github.com/rivenmedia/riven-ts.git /opt/rivents.build
 git -C /opt/rivents.build rev-parse HEAD > /opt/latest.txt
 msg_ok "Downloaded RivenTS"
 
@@ -59,7 +59,6 @@ msg_info "Building RivenTS"
 export NODE_OPTIONS="--max-old-space-size=4096"
 cd /opt/rivents.build
 $STD pnpm install --frozen-lockfile --force
-$STD pnpm turbo generate-schemas
 $STD pnpm turbo telemetry disable
 $STD pnpm turbo run build --no-daemon --filter=@repo/riven
 $STD pnpm --filter @repo/riven --prod deploy /opt/rivents
@@ -131,9 +130,8 @@ Wants=network-online.target
 Type=simple
 User=root
 WorkingDirectory=/opt/rivents
-EnvironmentFile=/opt/rivents/.env.riven
 Environment="NODE_ENV=production"
-ExecStart=/usr/bin/node --conditions production --enable-source-maps /opt/rivents/dist/program/lib/index.js
+ExecStart=/usr/bin/node --conditions production --env-file-if-exists=.env.riven --enable-source-maps dist/program/lib/index.js
 Restart=on-failure
 RestartSec=10
 
