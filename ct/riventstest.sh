@@ -5,7 +5,7 @@ source <(curl -fsSL https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/fea
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/rivenmedia/riven-ts
 
-APP="RivenTS"
+APP="RivenTSTest"
 var_tags="${var_tags:-arr;media;debrid}"
 var_cpu="${var_cpu:-2}"
 var_ram="${var_ram:-8192}"
