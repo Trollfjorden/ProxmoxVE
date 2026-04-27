@@ -60,8 +60,8 @@ export NODE_OPTIONS="--max-old-space-size=4096"
 cd /opt/rivents.build
 $STD pnpm install --frozen-lockfile --force
 $STD pnpm turbo telemetry disable
-$STD pnpm turbo run build --no-daemon --filter=@repo/riven
-$STD pnpm --filter @repo/riven --prod deploy /opt/rivents
+$STD pnpm turbo run build --no-daemon --filter=@repo/riven#build
+$STD pnpm --filter @repo/riven#build --prod deploy /opt/rivents
 rm -rf /opt/rivents.build
 msg_ok "Built RivenTS"
 
