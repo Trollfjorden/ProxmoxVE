@@ -64,7 +64,7 @@ function update_script() {
     cd /opt/rivents.build
     $STD pnpm install --frozen-lockfile --force
     $STD pnpm turbo telemetry disable
-    $STD pnpm turbo run build --no-daemon --filter=@repo/riven#build
+    $STD pnpm turbo run build --no-daemon --filter=@repo/riven
 
     msg_info "Backing up Data"
     cp /opt/rivents/.env.riven /tmp/.env.riven 2>/dev/null || true
