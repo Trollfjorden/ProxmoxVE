@@ -23,8 +23,8 @@ $STD apt install -y \
   libffi-dev \
   pkg-config \
   libpq-dev \
-  fuse3 \
-  libfuse3-dev
+  fuse \
+  libfuse-dev
 msg_ok "Installed Dependencies"
 
 msg_info "Configuring FUSE"
