@@ -72,6 +72,7 @@ function update_script() {
 
     rm -rf /opt/rivents
     $STD pnpm --filter @repo/riven --prod deploy /opt/rivents
+    cd /opt/rivents
     rm -rf /opt/rivents.build
 
     msg_info "Restoring Data"
