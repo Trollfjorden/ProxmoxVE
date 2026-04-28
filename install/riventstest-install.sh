@@ -80,10 +80,14 @@ RIVEN_SETTING__logDirectory="/opt/rivents/logs"
 RIVEN_SETTING__enabledLogTransports=["console"]
 RIVEN_SETTING__preferSeasonPacks=true
 
-# Optional Features (uncomment to enable)
+# Development & Troubleshooting Settings (uncomment to enable)
+# SENTRY_SPOTLIGHT=1
+# SENTRY_SPOTLIGHT_CLEAR_ON_STARTUP=1
 # RIVEN_SETTING__vfsDebugLogging=true
 # RIVEN_SETTING__unsafeClearQueuesOnStartup=true
 # RIVEN_SETTING__unsafeRefreshDatabaseOnStartup=true
+# RIVEN_SETTING__unsafeWipeRedisOnStartup=true
+# RIVEN_SETTING__unsafeWipeDatabaseOnStartup=true
 
 # Plugins (uncomment and add your API keys)
 
