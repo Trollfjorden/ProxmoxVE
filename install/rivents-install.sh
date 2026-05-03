@@ -16,14 +16,11 @@ update_os
 msg_info "Installing Dependencies"
 $STD apt install -y \
   git \
-  redis-server \
   build-essential \
-  python3-dev \
-  python3-venv \
-  libffi-dev \
   pkg-config \
-  libpq-dev \
-  fuse \
+  redis-server \
+  python3 \
+  fuse3 \
   libfuse-dev
 msg_ok "Installed Dependencies"
 
