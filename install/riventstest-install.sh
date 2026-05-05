@@ -34,7 +34,7 @@ PG_VERSION="18" setup_postgresql
 PG_DB_NAME="rivents" PG_DB_USER="rivents" setup_postgresql_db
 
 msg_info "Installing pnpm"
-PNPM_VERSION="$(curl -fsSL "https://raw.githubusercontent.com/rivenmedia/riven-ts/refs/heads/chore/configure-multi-platform-docker-builds/package.json" | jq -r '.packageManager | split("@")[1]' | cut -d'+' -f1)"
+PNPM_VERSION="$(curl -fsSL "https://raw.githubusercontent.com/rivenmedia/riven-ts/refs/heads/main/package.json" | jq -r '.packageManager | split("@")[1]' | cut -d'+' -f1)"
 export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 $STD corepack enable pnpm
 $STD corepack prepare pnpm@${PNPM_VERSION} --activate
