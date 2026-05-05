@@ -33,7 +33,7 @@ function update_script() {
   NODE_VERSION="24" setup_nodejs
 
   msg_info "Checking for updates"
-  RELEASE=$(git ls-remote https://github.com/rivenmedia/riven-ts.git chore/configure-multi-platform-docker-builds | awk '{ print $1 }')
+  RELEASE=$(git ls-remote https://github.com/rivenmedia/riven-ts.git HEAD | awk '{ print $1 }')
   current=""
   [[ -f /opt/latest.txt ]] && current=$(cat /opt/latest.txt)
 
@@ -49,13 +49,13 @@ function update_script() {
     msg_ok "Stopped Services"
 
     msg_info "Updating pnpm"
-    PNPM_VERSION="$(curl -fsSL "https://raw.githubusercontent.com/rivenmedia/riven-ts/refs/heads/chore/configure-multi-platform-docker-builds/package.json" | jq -r '.packageManager | split("@")[1]' | cut -d'+' -f1)"
+    PNPM_VERSION="$(curl -fsSL "https://raw.githubusercontent.com/rivenmedia/riven-ts/refs/heads/main/package.json" | jq -r '.packageManager | split("@")[1]' | cut -d'+' -f1)"
     export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
     $STD corepack prepare pnpm@${PNPM_VERSION} --activate
     msg_ok "Updated pnpm"
 
     msg_info "Downloading RivenTS"
-    $STD git clone -b chore/configure-multi-platform-docker-builds https://github.com/rivenmedia/riven-ts.git /opt/rivents.build
+    $STD git clone https://github.com/rivenmedia/riven-ts.git /opt/rivents.build
     echo "${RELEASE}" > /opt/latest.txt
     msg_ok "Downloaded RivenTS"
 
