@@ -34,21 +34,21 @@ PG_VERSION="18" setup_postgresql
 PG_DB_NAME="rivents" PG_DB_USER="rivents" setup_postgresql_db
 
 msg_info "Installing pnpm"
-PNPM_VERSION="$(curl -fsSL "https://raw.githubusercontent.com/rivenmedia/riven-ts/refs/heads/chore/configure-multi-platform-docker-builds/package.json" | jq -r '.packageManager | split("@")[1]' | cut -d'+' -f1)"
+PNPM_VERSION="$(curl -fsSL "https://raw.githubusercontent.com/rivenmedia/riven-ts/refs/heads/main/package.json" | jq -r '.packageManager | split("@")[1]' | cut -d'+' -f1)"
 export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 $STD corepack enable pnpm
 $STD corepack prepare pnpm@${PNPM_VERSION} --activate
 msg_ok "Installed pnpm"
 
 msg_info "Setting up directories"
-mkdir -p /mount/riven /mnt/riven /dev/shm/rivents-cache
+mkdir -p /mnt/rivents /dev/shm/rivents-cache
 mkdir -p /opt/rivents
-chmod 755 /mount/riven /mnt/riven
+chmod 755 /mnt/rivents
 chmod 700 /dev/shm/rivents-cache
 msg_ok "Set up directories"
 
 msg_info "Downloading RivenTS"
-$STD git clone -b chore/configure-multi-platform-docker-builds https://github.com/rivenmedia/riven-ts.git /opt/rivents.build
+$STD git clone https://github.com/rivenmedia/riven-ts.git /opt/rivents.build
 git -C /opt/rivents.build rev-parse HEAD > /opt/latest.txt
 msg_ok "Downloaded RivenTS"
 
@@ -71,10 +71,10 @@ TZ=${TZ}
 # Core Settings
 RIVEN_SETTING__databaseUrl="postgresql://${PG_DB_USER}:${PG_DB_PASS}@127.0.0.1:5432/${PG_DB_NAME}"
 RIVEN_SETTING__redisUrl="redis://127.0.0.1:6379"
-RIVEN_SETTING__vfsMountPath="/mnt/riven"
-RIVEN_SETTING__logLevel="info"
+RIVEN_SETTING__vfsMountPath="/mnt/rivents"
+RIVEN_SETTING__logLevel="debug"
 RIVEN_SETTING__logDirectory="/opt/rivents/logs"
-RIVEN_SETTING__enabledLogTransports=["console"]
+RIVEN_SETTING__enabledLogTransports=["console","file"]
 RIVEN_SETTING__preferSeasonPacks=true
 
 # Development & Troubleshooting Settings (uncomment to enable)
@@ -87,7 +87,6 @@ RIVEN_SETTING__preferSeasonPacks=true
 # RIVEN_SETTING__unsafeWipeDatabaseOnStartup=true
 
 # Plugins (uncomment and add your API keys)
-
 # Stremthru
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_STREMTHRU__realdebridApiKey="<key>"
 
