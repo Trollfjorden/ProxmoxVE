@@ -30,7 +30,7 @@ function update_script() {
     exit
   fi
 
-  NODE_VERSION="24" setup_nodejs
+  NODE_VERSION="26" setup_nodejs
 
   msg_info "Checking for updates"
   RELEASE=$(git ls-remote https://github.com/rivenmedia/riven-ts.git HEAD | awk '{ print $1 }')
