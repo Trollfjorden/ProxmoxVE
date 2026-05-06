@@ -85,7 +85,7 @@ RIVEN_SETTING__logDirectory="/opt/rivents/logs"
 # RIVEN_SETTING__scheduleOffsetMinutes=30
 # RIVEN_SETTING__scrapeCooldownHours=[2,6,24]
 # RIVEN_SETTING__unknownAirDateOffsetDays=7
-# RIVEN_SETTING__enabledPlugins=['comet' | 'listrr' | 'mdblist' | 'notifications' | 'plex' | 'seerr' | 'stremthru' | 'subdl' | 'tmdb' | 'torrentio' | 'tvdb']
+# RIVEN_SETTING__enabledPlugins=["comet", "listrr", "mdblist", "notifications", "plex", "seerr", "stremthru", "subdl", "tmdb", "torrentio", "tvdb"]
 
 # Development & Troubleshooting Settings (uncomment to enable)
 # SENTRY_SPOTLIGHT=1
@@ -150,7 +150,7 @@ RIVEN_SETTING__logDirectory="/opt/rivents/logs"
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_TRAKT__apiKey="<key>"
 
 # Notifications
-# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_NOTIFICATIONS__urls=[discord://id/token, json://host/path]
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_NOTIFICATIONS__urls=["discord://id/token", "json://host/path"]
 EOF
 
 chmod 600 /opt/rivents/.env.riven
