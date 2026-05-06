@@ -70,7 +70,7 @@ cat <<EOF >>/opt/rivents/.env.riven
 TZ=${TZ}
 # Core Settings
 RIVEN_SETTING__databaseUrl="postgresql://${PG_DB_USER}:${PG_DB_PASS}@127.0.0.1/${PG_DB_NAME}?host=/var/run/postgresql"
-RIVEN_SETTING__redisUrl="redis:///var/run/redis/redis-server.sock"
+RIVEN_SETTING__redisUrl="redis://127.0.0.1:6379"
 RIVEN_SETTING__vfsMountPath="/mnt/rivents"
 RIVEN_SETTING__logLevel="debug"
 RIVEN_SETTING__logDirectory="/opt/rivents/logs"
