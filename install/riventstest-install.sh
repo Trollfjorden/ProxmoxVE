@@ -29,7 +29,7 @@ $STD sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 grep -q '^user_allow_other' /etc/fuse.conf || echo 'user_allow_other' >> /etc/fuse.conf
 msg_ok "Configured FUSE"
 
-NODE_VERSION="26" setup_nodejs
+NODE_VERSION="24" setup_nodejs
 PG_VERSION="18" setup_postgresql
 PG_DB_NAME="rivents" PG_DB_USER="rivents" setup_postgresql_db
 
