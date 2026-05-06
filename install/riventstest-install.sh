@@ -168,7 +168,7 @@ Type=simple
 User=root
 WorkingDirectory=/opt/rivents
 Environment="NODE_ENV=production"
-ExecStart=/usr/bin/node --conditions production --env-file-if-exists=.env.riven --enable-source-maps dist/program/lib/index.js
+ExecStart=/usr/bin/node --conditions production --env-file-if-exists=.env.riven --enable-source-maps dist/lib/index.js
 Restart=on-failure
 RestartSec=10
 
