@@ -29,7 +29,7 @@ $STD sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 grep -q '^user_allow_other' /etc/fuse.conf || echo 'user_allow_other' >> /etc/fuse.conf
 msg_ok "Configured FUSE"
 
-NODE_VERSION="24" setup_nodejs
+NODE_VERSION="26" setup_nodejs
 PG_VERSION="18" setup_postgresql
 PG_DB_NAME="rivents" PG_DB_USER="rivents" setup_postgresql_db
 
@@ -74,45 +74,83 @@ RIVEN_SETTING__redisUrl="redis://127.0.0.1:6379"
 RIVEN_SETTING__vfsMountPath="/mnt/rivents"
 RIVEN_SETTING__logLevel="debug"
 RIVEN_SETTING__logDirectory="/opt/rivents/logs"
-RIVEN_SETTING__enabledLogTransports=["console","file"]
-RIVEN_SETTING__preferSeasonPacks=true
+
+# Content settings
+# RIVEN_SETTING__preferSeasonPacks=true
+# RIVEN_SETTING__attemptUnknownDownloads=false
+# RIVEN_SETTING__dubbedAnimeOnly=false
+# RIVEN_SETTING__maximumScrapeAttempts=1234
+# RIVEN_SETTING__minimumAverageBitrateMovies=1234
+# RIVEN_SETTING__minimumAverageBitrateEpisodes=1234
+# RIVEN_SETTING__scheduleOffsetMinutes=30
+# RIVEN_SETTING__scrapeCooldownHours=[2,6,24]
+# RIVEN_SETTING__unknownAirDateOffsetDays=7
+# RIVEN_SETTING__enabledPlugins=['comet' | 'listrr' | 'mdblist' | 'notifications' | 'plex' | 'seerr' | 'stremthru' | 'subdl' | 'tmdb' | 'torrentio' | 'tvdb']
 
 # Development & Troubleshooting Settings (uncomment to enable)
 # SENTRY_SPOTLIGHT=1
 # SENTRY_SPOTLIGHT_CLEAR_ON_STARTUP=1
+# RIVEN_SETTING__loggingEnabled=true
+# RIVEN_SETTING__logShowStackTraces=true
 # RIVEN_SETTING__vfsDebugLogging=true
+# RIVEN_SETTING__databaseDebugLogging=true
+# RIVEN_SETTING__enabledLogTransports=["console","file"]
 # RIVEN_SETTING__unsafeClearQueuesOnStartup=true
 # RIVEN_SETTING__unsafeRefreshDatabaseOnStartup=true
 # RIVEN_SETTING__unsafeWipeRedisOnStartup=true
 # RIVEN_SETTING__unsafeWipeDatabaseOnStartup=true
 
-# Plugins (uncomment and add your API keys)
+# Plugins:
+# Comet
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_COMET__url="<url>"
+
 # Stremthru
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_STREMTHRU__stremThruUrl="<url>"
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_STREMTHRU__realdebridApiKey="<key>"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_STREMTHRU__alldebridApiKey="<key>"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_STREMTHRU__premiumizeApiKey="<key>"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_STREMTHRU__torboxApiKey="<key>"
+
+# Torrentio
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_TORRENTIO__filter="sort=qualitysize%7Cqualityfilter=threed,480p,scr,cam"
 
 # Seerr
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_SEERR__url="http://<seerr-lxc-ip>:5055"
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_SEERR__apiKey="<key>"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_SEERR__filter="approved"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_SEERR__updateIntervalSeconds=60
 
 # Plex
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_PLEX__plexServerUrl="http://<plex-lxc-ip>:32400"
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_PLEX__plexToken="<key>"
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_PLEX__plexLibraryPath="/mnt/riven"
 
+# SubDL
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_SUBDL__apiKey="<key>"
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_SUBDL__languages="[en]"
+
 # TMDB
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_TMDB__apiKey="<key>"
 
+# TVDB
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_TVDB__apiKey="<key>"
+
 # Listrr
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_LISTRR__apiKey="<key>"
-# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_LISTRR__movieLists=["..."]
-# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_LISTRR__showLists=["..."]
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_LISTRR__movieLists=[1234]
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_LISTRR__showLists=[1234]
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_LISTRR__updateIntervalSeconds=86400
 
 # MDBList
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_MDBLIST__apiKey="<key>"
-# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_MDBLIST__lists=["..."]
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_MDBLIST__lists=[1234]
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_MDBLIST__updateIntervalSeconds=86400
 
 # Trakt
 # RIVEN_PLUGIN_SETTING__REPO_PLUGIN_TRAKT__apiKey="<key>"
+
+# Notifications
+# RIVEN_PLUGIN_SETTING__REPO_PLUGIN_NOTIFICATIONS__urls=[discord://id/token, json://host/path]
 EOF
 
 chmod 600 /opt/rivents/.env.riven
