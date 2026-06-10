@@ -47,12 +47,12 @@ chmod 755 /mnt/rivents
 chmod 700 /dev/shm/rivents-cache
 msg_ok "Set up directories"
 
-msg_info "Downloading RivenTS"
+msg_info "Downloading ${APP}"
 $STD git clone https://github.com/rivenmedia/riven-ts.git /opt/rivents.build
 git -C /opt/rivents.build rev-parse HEAD > /opt/latest.txt
-msg_ok "Downloaded RivenTS"
+msg_ok "Downloaded ${APP}"
 
-msg_info "Building RivenTS"
+msg_info "Building ${APP}"
 export NODE_OPTIONS="--max-old-space-size=4096"
 cd /opt/rivents.build
 $STD pnpm install --frozen-lockfile --force
@@ -61,9 +61,9 @@ $STD pnpm turbo run build --no-daemon --filter=@repo/riven
 $STD pnpm --filter @repo/riven --prod deploy /opt/rivents
 cd /opt/rivents
 rm -rf /opt/rivents.build
-msg_ok "Built RivenTS"
+msg_ok "Built ${APP}"
 
-msg_info "Configuring RivenTS"
+msg_info "Configuring ${APP}"
 export TZ=$(cat /etc/timezone)
 
 cat <<EOF >>/opt/rivents/.env.riven
@@ -154,7 +154,7 @@ RIVEN_SETTING__logDirectory="/opt/rivents/logs"
 EOF
 
 chmod 600 /opt/rivents/.env.riven
-msg_ok "Configured RivenTS"
+msg_ok "Configured ${APP}"
 
 msg_info "Creating Service"
 cat <<EOF >/lib/systemd/system/rivents.service
