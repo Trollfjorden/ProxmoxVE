@@ -54,12 +54,12 @@ function update_script() {
     $STD corepack prepare pnpm@${PNPM_VERSION} --activate
     msg_ok "Updated pnpm"
 
-    msg_info "Downloading RivenTS"
+    msg_info "Downloading ${APP}"
     $STD git clone https://github.com/rivenmedia/riven-ts.git /opt/rivents.build
     echo "${RELEASE}" > /opt/latest.txt
-    msg_ok "Downloaded RivenTS"
+    msg_ok "Downloaded ${APP}"
 
-    msg_info "Building RivenTS"
+    msg_info "Building ${APP}"
     export NODE_OPTIONS="--max-old-space-size=4096"
     cd /opt/rivents.build
     $STD pnpm install --frozen-lockfile --force
@@ -78,7 +78,7 @@ function update_script() {
     msg_info "Restoring Data"
     cp /tmp/.env.riven /opt/rivents/.env.riven 2>/dev/null || true
     msg_ok "Restored Data"
-    msg_ok "Built RivenTS"
+    msg_ok "Updated ${APP}"
     
     msg_info "Starting Services"
     systemctl start postgresql redis-server rivents
