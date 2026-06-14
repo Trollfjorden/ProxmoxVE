@@ -60,6 +60,9 @@ function update_script() {
 
     msg_info "Updating Dependencies"
     $STD uv pip install -r requirements.txt
+    if [[ -f requirements-optional.txt ]]; then
+      $STD uv pip install -r requirements-optional.txt
+    fi
     msg_ok "Updated Dependencies"
 
     msg_info "Restoring Data"

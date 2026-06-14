@@ -45,6 +45,9 @@ fi
 echo "ODYSSEUS_ADMIN_PASSWORD=$ADMIN_PASSWORD" >> .env
 
 $STD uv pip install -r requirements.txt
+if [[ -f requirements-optional.txt ]]; then
+  $STD uv pip install -r requirements-optional.txt
+fi
 $STD /opt/odysseus/.venv/bin/python setup.py
 msg_ok "Set up ${APP}"
 
