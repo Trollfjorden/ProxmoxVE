@@ -17,7 +17,7 @@ msg_info "Installing Dependencies"
 $STD apt install -y build-essential git
 msg_ok "Installed Dependencies"
 
-PYTHON_VERSION="3.13" setup_uv
+PYTHON_VERSION="3.14" setup_uv
 
 msg_info "Cloning ${APP} dev branch"
 $STD git clone -b dev https://github.com/pewdiepie-archdaemon/odysseus.git /opt/odysseus
