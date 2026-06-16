@@ -85,13 +85,7 @@ start
 build_container
 description
 
-PASS=$(pct exec "$CTID" -- grep "^ODYSSEUS_ADMIN_PASSWORD=" /opt/odysseus/.env | cut -d'=' -f2)
-
 msg_ok "Completed Successfully!\n"
 echo -e "${CREATING}${GN}${APP} setup has been successfully initialized!${CL}"
 echo -e "${INFO}${YW} Access it using the following URL:${CL}"
 echo -e "${TAB}${GATEWAY}${BGN}http://${IP}:7000${CL}"
-if [ -n "$PASS" ]; then
-  echo -e "${INFO}${YW} Initial Admin Username: ${BGN}admin${CL}"
-  echo -e "${INFO}${YW} Initial Admin Password: ${BGN}${PASS}${CL}"
-fi
