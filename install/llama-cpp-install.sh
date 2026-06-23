@@ -48,6 +48,7 @@ case "$VARIANT" in
     ;;
   openvino)
     msg_info "Setting up Intel OpenVINO Repository"
+    $STD apt install -y jq
     mkdir -p /usr/share/keyrings
     curl -fsSL https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB |
       gpg --dearmor -o /usr/share/keyrings/oneapi-archive-keyring.gpg 2>/dev/null || true
@@ -142,12 +143,9 @@ if [[ -z "$MODEL" ]]; then
 fi
 
 # Locate llama-server binary (path depends on tarball structure)
-if [[ -x /opt/llama-cpp/bin/llama-server ]]; then
-  LLAMA_SERVER=/opt/llama-cpp/bin/llama-server
-  LIB_DIR=/opt/llama-cpp/bin
-elif [[ -x /opt/llama-cpp/build/bin/llama-server ]]; then
-  LLAMA_SERVER=/opt/llama-cpp/build/bin/llama-server
-  LIB_DIR=/opt/llama-cpp/build/bin
+if [[ -x /opt/llama-cpp/llama-server ]]; then
+  LLAMA_SERVER=/opt/llama-cpp/llama-server
+  LIB_DIR=/opt/llama-cpp
 else
   echo "ERROR: llama-server binary not found!" >&2
   exit 1
