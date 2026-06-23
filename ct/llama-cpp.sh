@@ -5,7 +5,7 @@ source <(curl -fsSL https://raw.githubusercontent.com/Trollfjorden/ProxmoxVE/fea
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/ggml-org/llama.cpp
 
-APP="Llama.cpp"
+APP="Llama-cpp"
 var_tags="${var_tags:-ai;llm}"
 var_cpu="${var_cpu:-4}"
 var_ram="${var_ram:-8192}"
